@@ -1,8 +1,35 @@
 import sys
+import pandas as pd
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    """load_data loads the messages and categories data, executes an inner join by their id attributes and removes the original column
+
+    args:
+        messages_filepath (str):  The disaster_messages.csv file path
+        categories_filepath (str):  The disaster_categories.csv file path
+
+    returns:
+        the disaster_messages.csv and disaster_categories.csv joined by id
+    """
+    # import and define data types for categories
+    categories_dtypes = {'id':  'Int64', 'categories': 'string'}
+    categories = pd.read_csv("data/disaster_categories.csv", dtype=categories_dtypes)
+
+    # import and define data types for messages and remove original field
+    messages_dtypes = {'id':  'Int64', 'message': 'string', 'genre': 'string'}
+    messages_usecols = ['id', 'message', 'genre']
+    messages = pd.read_csv('data/disaster_messages.csv', dtype=messages_dtypes, usecols=messages_usecols)
+
+    # inner join the dataframes
+    df = categories.merge(messages, how='inner', on='id')
+
+    # remove duplicates
+    df.drop_duplicates(inplace=True)
+    
+    return df
+
+
 
 
 def clean_data(df):
