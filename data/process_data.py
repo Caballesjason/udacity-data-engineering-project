@@ -35,6 +35,13 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """clean_data cleans the joined csv data to create columns for the categories
+    
+        args:
+            df (Pandas DataFrame):  The dataframe to be cleaned
+
+        returns: The cleaned dataframe
+    """
     # get categories column as series
     categories = df['categories']
 
