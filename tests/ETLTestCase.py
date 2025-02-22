@@ -35,6 +35,21 @@ class ETLTestCase(unittest.TestCase):
         msg = "\n\nThere were {} duplicate rows in your dataset after the inner join".format(actual_truth_count)
         self.assertEqual(expected_truth_count, actual_truth_count, msg)
 
+    def test_correct_nbr_of_category_columns(self):
+        """
+        test_correct_nbr_of_category_columns tests that there is a column for each category
+        """
+        
+        expected = set([
+                        'id', 'categories', 'message', 'genre', 'related', 'request', 'offer', 'aid_related', 'medical_help', 'medical_products', 'search_and_rescue',
+                        'security', 'military', 'child_alone', 'water', 'food', 'shelter', 'clothing', 'money', 'missing_people', 'refugees', 'death', 'other_aid',
+                        'infrastructure_related', 'transport', 'buildings', 'electricity', 'tools', 'hospitals', 'shops', 'aid_centers', 'other_infrastructure',
+                        'weather_related', 'floods', 'storm', 'fire', 'earthquake', 'cold', 'other_weather', 'direct_report'
+                        ])
+        actual = set(self.df.columns)
+        msg = "\n\nThe expected columns were not created in your dataset"
+        self.assertEqual(expected, actual, msg)
+    
     def tearDown(self):
         del self.df
 
