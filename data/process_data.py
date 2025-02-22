@@ -26,6 +26,9 @@ def load_data(messages_filepath, categories_filepath):
 
     # remove duplicates
     df.drop_duplicates(inplace=True)
+
+    # reset index
+    df.reset_index()
     
     return df
 
