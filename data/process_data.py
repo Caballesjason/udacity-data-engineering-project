@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import re
 
 
 def load_data(messages_filepath, categories_filepath):
@@ -33,10 +34,36 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 
-
-
 def clean_data(df):
-    pass
+    # get categories column as series
+    categories = df['categories']
+
+    # drop categories column from original dataframe
+    df.drop('categories', inplace=True, axis=1)
+
+    # split categories by to get column categories
+    split_categories = categories.str.split(";", expand=True)
+
+    # get example string from categories series
+    example_category_string = categories[0]
+
+    # remove - and digits from categories string
+    clean_titles = re.sub(r"(-\d)|", "", example_category_string)
+
+    # get list of categories
+    clean_titles = clean_titles.split(";")
+
+    # set the category column titles
+    split_categories = split_categories.set_axis(clean_titles, axis=1)
+
+    # Convert all values to their integers
+    get_ints = lambda val: int(val[-1])
+    split_categories = split_categories.map(get_ints)
+
+    # merge the original dataframe with the categories dataframe by index
+    df = df.merge(split_categories, left_index=True, right_index=True)
+
+    return df
 
 
 def save_data(df, database_filename):

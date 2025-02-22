@@ -1,5 +1,6 @@
 import unittest
 import data.process_data as process_data
+from data.process_data import clean_data
 import pandas as pd
 
 class ETLTestCase(unittest.TestCase):
@@ -15,6 +16,7 @@ class ETLTestCase(unittest.TestCase):
         messages_usecols = ['id', 'message', 'genre']
         self.messages = pd.read_csv('data/disaster_messages.csv', dtype=messages_dtypes, usecols=messages_usecols)
         self.df = process_data.load_data(messages_filepath=messages_path, categories_filepath=categories_path)
+        self.clean_df = clean_data(self.df)
 
     def test_inner_join(self):
         """ 
@@ -41,12 +43,12 @@ class ETLTestCase(unittest.TestCase):
         """
         
         expected = set([
-                        'id', 'categories', 'message', 'genre', 'related', 'request', 'offer', 'aid_related', 'medical_help', 'medical_products', 'search_and_rescue',
+                        'id', 'message', 'genre', 'related', 'request', 'offer', 'aid_related', 'medical_help', 'medical_products', 'search_and_rescue',
                         'security', 'military', 'child_alone', 'water', 'food', 'shelter', 'clothing', 'money', 'missing_people', 'refugees', 'death', 'other_aid',
                         'infrastructure_related', 'transport', 'buildings', 'electricity', 'tools', 'hospitals', 'shops', 'aid_centers', 'other_infrastructure',
                         'weather_related', 'floods', 'storm', 'fire', 'earthquake', 'cold', 'other_weather', 'direct_report'
                         ])
-        actual = set(self.df.columns)
+        actual = set(self.clean_df.columns)
         msg = "\n\nThe expected columns were not created in your dataset"
         self.assertEqual(expected, actual, msg)
     
