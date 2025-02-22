@@ -14,11 +14,11 @@ def load_data(messages_filepath, categories_filepath):
         the disaster_messages.csv and disaster_categories.csv joined by id
     """
     # import and define data types for categories
-    categories_dtypes = {'id':  'Int64', 'categories': 'string'}
+    categories_dtypes = {'id':  'int', 'categories': 'string'}
     categories = pd.read_csv("data/disaster_categories.csv", dtype=categories_dtypes)
 
     # import and define data types for messages and remove original field
-    messages_dtypes = {'id':  'Int64', 'message': 'string', 'genre': 'string'}
+    messages_dtypes = {'id':  'int', 'message': 'string', 'genre': 'string'}
     messages_usecols = ['id', 'message', 'genre']
     messages = pd.read_csv('data/disaster_messages.csv', dtype=messages_dtypes, usecols=messages_usecols)
 
@@ -26,7 +26,7 @@ def load_data(messages_filepath, categories_filepath):
     df = categories.merge(messages, how='inner', on='id')
 
     # remove duplicates
-    df.drop_duplicates(inplace=True)
+    df = df.drop_duplicates()
 
     # reset index
     df.reset_index()
@@ -39,7 +39,7 @@ def clean_data(df):
     categories = df['categories']
 
     # drop categories column from original dataframe
-    df.drop('categories', inplace=True, axis=1)
+    df = df.drop('categories', axis=1)
 
     # split categories by to get column categories
     split_categories = categories.str.split(";", expand=True)

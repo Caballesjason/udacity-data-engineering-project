@@ -5,17 +5,21 @@ import pandas as pd
 
 class ETLTestCase(unittest.TestCase):
     def setUp(self):
-        categories_path = '../data/disaster_categories.csv'
-        messages_path = '../data/disaster_messages.csv'
+        categories_path = 'data/disaster_categories.csv'
+        messages_path = 'data/disaster_messages.csv'
          # import and define data types for categories
         categories_dtypes = {'id':  'Int64', 'categories': 'string'}
-        self.categories = pd.read_csv("data/disaster_categories.csv", dtype=categories_dtypes)
+        self.categories = pd.read_csv(categories_path, dtype=categories_dtypes)
 
         # import and define data types for messages and remove original field
         messages_dtypes = {'id':  'Int64', 'message': 'string', 'genre': 'string'}
         messages_usecols = ['id', 'message', 'genre']
-        self.messages = pd.read_csv('data/disaster_messages.csv', dtype=messages_dtypes, usecols=messages_usecols)
+        self.messages = pd.read_csv(messages_path, dtype=messages_dtypes, usecols=messages_usecols)
+
+        # import df from load_data function
         self.df = process_data.load_data(messages_filepath=messages_path, categories_filepath=categories_path)
+
+        # clean the df using clean_data function
         self.clean_df = clean_data(self.df)
 
     def test_inner_join(self):
@@ -33,9 +37,9 @@ class ETLTestCase(unittest.TestCase):
         test_no_duplicates tests that no duplicate rows exists
         """
         expected_truth_count = 0
-        actual_truth_count = self.df.duplicated().sum()
-        msg = "\n\nThere were {} duplicate rows in your dataset after the inner join".format(actual_truth_count)
-        self.assertEqual(expected_truth_count, actual_truth_count, msg)
+        actual_truth_count = self.df.duplicated()
+        msg = "\n\nThere were {} duplicate rows in your dataset after the inner join.  Below are the list of duplicated rows \n{}".format(actual_truth_count.sum(), actual_truth_count[actual_truth_count==True].index)
+        self.assertEqual(expected_truth_count, actual_truth_count.sum(), msg)
 
     def test_correct_nbr_of_category_columns(self):
         """
