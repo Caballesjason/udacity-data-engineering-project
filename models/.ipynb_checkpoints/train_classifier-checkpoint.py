@@ -46,7 +46,7 @@ def tokenize(text):
     text (string): The text to tokenize
 
     returns:
-    the clean string ready to be tokenized in TFIDFVectorizer
+    the tokenized string as a list
     """
     clean_text = text.lower() # make text lowercase
     clean_text = re.sub(r"[^a-zA-Z]", " ", clean_text) # remove punctuation, digits and whitespace
@@ -57,9 +57,7 @@ def tokenize(text):
     # lemmatize words
     lemmatizer = WordNetLemmatizer()
     tokenized = [lemmatizer.lemmatize(word) for word in tokenized]
-    # return cleaned text for TFIDF tokenization
-    clean_string = " ".join(tokenized)
-    return clean_string
+    return tokenized
 
 
 def build_model():

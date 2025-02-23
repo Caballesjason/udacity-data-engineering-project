@@ -29,7 +29,7 @@ class ModelTrainingTestCase(unittest.TestCase):
         This test determines that the tokenizer function properly tokenizes text
         """
         test_string = "Running faster than the wind, he's quickly jumping over lazy dogs, but she wasn't impressed!"
-        expected = 'running faster wind quickly jumping lazy dog impressed'
+        expected = ['running', 'faster', 'wind', 'quickly', 'jumping', 'lazy', 'dog', 'impressed']
         actual = tokenize(test_string)
         msg = "\ntokenize did not correctly tokenize the text"
         self.assertEqual(expected, actual, msg)
