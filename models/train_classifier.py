@@ -22,7 +22,7 @@ def load_data(database_filepath):
     conn = engine.connect() # database connection
     query_string = "SELECT * FROM messages;" # database connection
     df = pd.read_sql(sql=query_string, con=conn) # returned data from database
-    X = df[['id', 'message', 'genre']] # create feature set
+    X = df['message'] # create feature set
     Y = df.drop(labels=['id', 'message', 'genre', 'index'], axis=1, inplace=False) # create target set
     category_names = list(Y.columns) # get all category names
 

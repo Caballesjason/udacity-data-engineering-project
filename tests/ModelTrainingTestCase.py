@@ -1,5 +1,6 @@
 import unittest
 from models.train_classifier import load_data
+from models.train_classifier import tokenize
 import pandas as pd
 
 class ModelTrainingTestCase(unittest.TestCase):
@@ -7,15 +8,6 @@ class ModelTrainingTestCase(unittest.TestCase):
         path = 'data/DisasterResponse.db'
         self.X, self.Y, self.category_names = load_data(database_filepath=path)
     
-    def test_correct_columns_X(self):
-        """
-        This test determines that the correct columns are in the feature set X
-        """
-
-        expected = set(['id', 'message', 'genre'])
-        actual = set(self.X.columns)
-        msg = "\nThe correct columns were not provided to X"
-        self.assertEqual(expected, actual, msg=msg)
 
     def test_correct_columns_Y(self):
         """
@@ -31,6 +23,17 @@ class ModelTrainingTestCase(unittest.TestCase):
         actual = set(self.Y.columns)
         msg = "\nThe correct columns were not provided to Y"
         self.assertEqual(expected, actual, msg=msg)
+
+    def test_tokenizer(self):
+        """
+        This test determines that the tokenizer function properly tokenizes text
+        """
+        test_string = "Running faster than the wind, he's quickly jumping over lazy dogs, but she wasn't impressed!"
+        expected = ["run", "fast", "wind", "quickly", "jump", "lazy", "dog", "impress"]
+        actual = tokenize(test_string)
+        msg = "tokenize did not correctly tokenize the text"
+        self.assertEqual(expected, actual, msg)
+'
 
     def test_correct_category_names(self):
         """
