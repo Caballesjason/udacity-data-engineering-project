@@ -33,7 +33,7 @@ class ModelTrainingTestCase(unittest.TestCase):
         actual = tokenize(test_string)
         msg = "tokenize did not correctly tokenize the text"
         self.assertEqual(expected, actual, msg)
-'
+
 
     def test_correct_category_names(self):
         """

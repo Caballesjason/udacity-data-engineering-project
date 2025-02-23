@@ -3,6 +3,11 @@ import data.process_data as processer
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 import pandas as pd
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords 
+import re
+
 
 def load_data(database_filepath):
     """load_data returns the features, targets, and a list of all categories
@@ -29,7 +34,29 @@ def load_data(database_filepath):
     return X, Y, category_names
 
 def tokenize(text):
-    pass
+    """tokenize will take a string and do the following transformations
+    1. lowercase all characters
+    2. remove punctuation, digits and uneeded whitespace
+    3. tokenize the data
+    4. remove stop words
+    5. apply lemmatization using NLTK
+    
+    args:
+    text (string): The text to tokenize
+
+    returns:
+    the tokenized string as a list
+    """
+    clean_text = text.lower() # make text lowercase
+    clean_text = re.sub(r"[^a-zA-Z]", " ", clean_text) # remove punctuation, digits and whitespace
+    tokenized = word_tokenize(clean_text) # tokenize words
+    # remove stop words
+    stop_words = set(stopwords.words('english'))
+    tokenized = [word for word in tokenized if word not in stop_words]
+    # lemmatize words
+    lemmatizer = WordNetLemmatizer()
+    tokenized = [lemmatizer.lemmatize(word) for word in tokenized]
+    return tokenized
 
 
 def build_model():
