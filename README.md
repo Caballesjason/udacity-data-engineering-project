@@ -12,3 +12,13 @@
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+
+
+### Executing Test Cases
+To execute the test case for the ETL process, enter the below text in your terminal
+
+`python -m unittest tests.ETLTestCase`
+
+To executethe test case for the model training process, enter the below text in your terminal
+
+`python -m unittest tests.ModelTrainingTestCase`
