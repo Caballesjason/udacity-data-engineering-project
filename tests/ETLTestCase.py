@@ -58,6 +58,9 @@ class ETLTestCase(unittest.TestCase):
     
     def tearDown(self):
         del self.df
+        del self.clean_df
+        del self.categories
+        del self.messages
 
 if __name__ == '__main__':
     unittest.main()
