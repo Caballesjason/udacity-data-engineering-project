@@ -1,9 +1,32 @@
 import sys
-
+import data.process_data as processer
+from sqlalchemy.sql import text
+from sqlalchemy import create_engine
+import pandas as pd
 
 def load_data(database_filepath):
-    pass
+    """load_data returns the features, targets, and a list of all categories
 
+    args:
+        database_file_path (str):  The file path to a database
+
+    returns:
+        X (Pandas DataFrame):  The feature set
+        Y (Pandas Series):  The target series
+        category_names (list):  The list of unique category names
+    """    
+
+    path = 'sqlite+pysqlite:///' + database_filepath # add dbapi and dialect declaration
+    print(path)
+    engine = create_engine(url=path, echo=False) # database engine
+    conn = engine.connect() # database connection
+    query_string = "SELECT * FROM messages;" # database connection
+    df = pd.read_sql(sql=query_string, con=conn) # returned data from database
+    X = df[['id', 'message', 'genre']] # create feature set
+    Y = df.drop(labels=['id', 'message', 'genre', 'index'], axis=1, inplace=False) # create target set
+    category_names = list(Y.columns) # get all category names
+
+    return X, Y, category_names
 
 def tokenize(text):
     pass
