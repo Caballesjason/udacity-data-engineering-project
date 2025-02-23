@@ -1,1 +1,6 @@
 *.ipynb
+data/*.db
+data/*.csv
+.gitignore
+.gitignore
+data/YourDatabaseName.db
