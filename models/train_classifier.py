@@ -1,12 +1,25 @@
 import sys
-import data.process_data as processer
+# import data.process_data as processer
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 import pandas as pd
+import re
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords 
-import re
+from sklearn.preprocessing import FunctionTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.utils.class_weight import compute_class_weight
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+import numpy as np
+import warnings
+warnings.filterwarnings('ignore')
+import pickle
 
 
 def load_data(database_filepath):
@@ -59,20 +72,62 @@ def tokenize(text):
     tokenized = [lemmatizer.lemmatize(word) for word in tokenized]
     # return cleaned text for TFIDF tokenization
     clean_string = " ".join(tokenized)
-    return clean_string
+    return tokenized
+
 
 
 def build_model():
-    pass
+    # Define transformer for tokenizer
+    def tokenizer(X):
+        return X.apply(tokenize)
+        
+    TokenizerTransformer = FunctionTransformer(func=tokenizer)
+    pipe = [
+        # ('tokenizer', TokenizerTransformer),
+        ('tfidf', TfidfVectorizer(tokenizer=tokenize)),
+        ('clf', MultiOutputClassifier(RandomForestClassifier(), n_jobs=-1))
+    ]
+    pipeline = Pipeline(pipe)
+
+    params = {
+        "clf__estimator__n_estimators": [50, 100, 150],
+        "clf__estimator__min_samples_split": [2, 3, 4],
+        # "clf__estimator__max_depth": [2]
+
+    }
+
+    # params = {
+    #     "tfidf__max_df": [0.9],
+    #     "tfidf__min_df": [0.05],
+    #     "clf__estimator__n_estimators": [20],
+
+    # }
+
+    cv = GridSearchCV(pipeline, param_grid=params, error_score='raise')
+    return cv
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    predictions = model.predict(X_test)
+    for index, category in enumerate(category_names):
+        # print(type(predictions), type(Y_test))
+        
+        precision = precision_score(predictions[:, index], Y_test.iloc[: ,index], average='macro')
+        precision = round(precision, 4)
+        recall = recall_score(predictions[:, index], Y_test.iloc[: ,index], average='macro')
+        recall = round(recall, 4)
+        f_one = f1_score(predictions[:, index], Y_test.iloc[: ,index], average='macro')
+        f_one = round(f_one, 4)
+        print("----  " + category  + " ----")
+        print("Precision: {}\tRecall: {}\tF1: {}\n".format(precision, recall, f_one))
+    return None
+
 
 
 def save_model(model, model_filepath):
-    pass
-
+    with open("classifier.pkl", "wb") as file:
+        pickle.dump(model, file)
+    return None
 
 def main():
     if len(sys.argv) == 3:
@@ -80,7 +135,7 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
         
